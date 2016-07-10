@@ -1,0 +1,20 @@
+{
+  "name": "iot-ui",
+  "version": "1.0.0",
+  "description": "iot UI project",
+  "main": "iotUI.js",
+  "dependencies": {
+    "materialize-css": "^0.97.6"
+  },
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-contrib-uglify": "^1.0.1",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-serve": "^0.1.6"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "mehtasan",
+  "license": "ISC"
+}

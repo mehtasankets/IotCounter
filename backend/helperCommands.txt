@@ -1,0 +1,5 @@
+To get the data:
+curl 'https://iotcounter.firebaseio.com/badmintonCounter/.json'
+
+To put the data:
+curl -X PUT -d ' "55"' 'https://iotcounter.firebaseio.com/badmintonCounter/20160726.json'
