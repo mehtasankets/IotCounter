@@ -1,4 +1,4 @@
-'use strict';
+import 'babel-polyfill';
 
 function IotUI() {
   this.badmintonCount = document.querySelector('#badminton-court-count');
