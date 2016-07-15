@@ -3,7 +3,6 @@ export default window.IotCardManager = (function() {
   var importDoc = currentScriptElement.ownerDocument;
 
   class IotCardManager extends HTMLElement {
-    // Use createdCallback instead of constructor to init an element.
     createdCallback() {
       var root = this.createShadowRoot();
       var template = document.querySelector('#iot-card-manager-template');
@@ -23,20 +22,12 @@ export default window.IotCardManager = (function() {
       if (window.CustomShadowDOMPolyfill) {
         this.distributeNode(clone);
       }
-
       root.appendChild(clone);
       this._data = {};
     }
   }
-
-  const IotCardManagerElement = document.registerElement('iot-card-manager',
-    IotCardManager);
-
-  // Freeze prototype so that prototype methods can't be added / removed / changed
+  const IotCardManagerElement = document.registerElement('iot-card-manager', IotCardManager);
   Object.freeze(IotCardManager.prototype);
-
-  // Freeze class so that static methods can't be added / removed / changed
   Object.freeze(IotCardManager);
-
   return IotCardManagerElement;
 })();

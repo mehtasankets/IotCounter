@@ -1,13 +1,17 @@
-<body>
-  <link rel="import" href="iot-card/iot-card.html">
-  <link rel="import" href="iot-card/iot-card-manager.html">
-  <script>
-  if (!window.CustomShadowDOMPolyfill) {
-    var currentScriptElement = document._currentScript || document.currentScript;
-    var importDoc = currentScriptElement.ownerDocument;
+<html>
+  <head>
+    <link rel="import" href="iot-card/iot-card.html">
+    <link rel="import" href="iot-card-manager/iot-card-manager.html">
+    <script>
+      if (!window.CustomShadowDOMPolyfill) {
+        var currentScriptElement = document._currentScript || document.currentScript;
+        var importDoc = currentScriptElement.ownerDocument;
 
-    var templates = importDoc.querySelectorAll('template[iot-custom-web-component]');
-    ImportInjectionModule.injectInTemplates(templates);
-  }
-  </script>
-</body>
+        var templates = importDoc.querySelectorAll('template[iot-custom-web-component]');
+        ImportInjectionModule.injectInTemplates(templates);
+      }
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
