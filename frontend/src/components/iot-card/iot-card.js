@@ -1,3 +1,4 @@
+
 export default window.IotCard = (function() {
   var currentScriptElement = document._currentScript || document.currentScript;
   var importDoc = currentScriptElement.ownerDocument;
@@ -6,11 +7,11 @@ export default window.IotCard = (function() {
     // Use createdCallback instead of constructor to init an element.
     createdCallback() {
       var root = this.createShadowRoot();
-      var template = document.querySelector('#iot-card');
+      var template = document.querySelector('#iot-card-template');
       var clone = null;
 
       if (!template) {
-        template = importDoc.querySelector('#iot-card');
+        template = importDoc.querySelector('#iot-card-template');
       }
 
       clone = document.importNode(template.content, true);

@@ -150,7 +150,7 @@ module.exports = function(grunt) {
     clean: ['dist']
   });
 
-  let buildPipeline = ['clean','sass', 'browserify', 'extract_sourcemap', 'uglify', 'copy:html', 'vulcanize'];
+  let buildPipeline = ['clean','sass', 'browserify', 'extract_sourcemap', 'vulcanize', 'uglify', 'copy:html'];
   grunt.registerTask('build-components', ['clean', 'sass', 'browserify:components', 'extract_sourcemap:components', 'uglify:components']);
   grunt.registerTask('build-commons', buildPipeline.concat(['copy:js-sourcemaps', 'copy:scss-soucemaps','copy:assets']));
   grunt.registerTask('build', 'Build the project', buildPipeline);
