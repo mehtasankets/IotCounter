@@ -1,5 +1,7 @@
 module.exports = function(grunt) {
 
+  require('jit-grunt')(grunt);
+
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -12,25 +14,30 @@ module.exports = function(grunt) {
         dest: 'dist/<%= pkg.name %>.min.js'
       }
     },
-    serve: {
-      options: {
-        port: 9000
+    connect: {
+      server: {
+        options: {
+          port: process.env.PORT || 3000,
+          useAvailablePort: true,
+          livereload: true,
+          hostname: process.env.HOST || '0.0.0.0',
+          base: 'src'
+        }
       }
     },
     watch: {
-      files: ['**/*'],
-      options: {
-        livereload: true
+      scripts: {
+        files: 'src/**/*',
+        tasks: ['build'],
+        options: {
+          spawn: false,
+          livereload: true
+        }
       }
     }
   });
 
-  // Load the plugin that provides the "uglify" task.
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-serve');
-
   // Default task(s).
-  grunt.registerTask('default', ['uglify', 'serve', 'watch']);
+  grunt.registerTask('default', ['uglify', 'connect:server', 'watch']);
 
 };
