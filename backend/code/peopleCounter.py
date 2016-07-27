@@ -1,6 +1,12 @@
+import cv2
+import numpy as np 
+from person import Person
+import math
+
 class PeopleCounter:
 
     def __init__(self, videoMeta, videoStream, frameProcessor):
+	self.people = []
         self.insideCount = 0
         self.videoMeta = videoMeta
         self.videoStream = videoStream
@@ -17,19 +23,20 @@ class PeopleCounter:
 
     def checkAndCountPeople(self, centerPoints):
         xCoordinates = []
+	midLine = self.frameProcessor.midLine
         for val in centerPoints:
             xCoordinates.append(val[0])
         outside=[]
         inside=[]
         for xVal in xCoordinates:
-            if x > midLine:
-                outside.append(x)
+            if xVal > midLine:
+                outside.append(xVal)
             else:
-                inside.append(x)
+                inside.append(xVal)
             if len(outside) > 0 and len(inside) > 0:
                 break
 
-        if xVal[0] > midLine:
+        if xCoordinates[0] > midLine:
             direction = -1
         else:
             direction = 1
@@ -66,13 +73,13 @@ class PeopleCounter:
                     pair = (pc,  pp)
         return pair
 
-    def updatePeopleTracker(peopleInPreviousFrame,  peopleInCurrentFrame):
+    def updatePeopleTracker(self, peopleInPreviousFrame,  peopleInCurrentFrame):
         count = len(peopleInCurrentFrame)
         updatedTracker = []
         for i in range(count):
             if (len(peopleInCurrentFrame) == 0 or len(peopleInPreviousFrame) == 0):
                 break
-            closestCurr,  closestPrev = closestCenterPoint(peopleInCurrentFrame,  peopleInPreviousFrame)
+            closestCurr,  closestPrev = self.closestCenterPoint(peopleInCurrentFrame,  peopleInPreviousFrame)
             peopleInCurrentFrame.remove(closestCurr)
             peopleInPreviousFrame.remove(closestPrev)
             closestPrev.update(closestCurr.trackerBlock)
@@ -84,12 +91,12 @@ class PeopleCounter:
                 updatedTracker.append(p)
         return updatedTracker
 
-    def updateCount(contours, peopleInPreviousFrame):
-        peopleInCurrentFrame = findPeople(contours)
-        peopleTracker = updatePeopleTracker(peopleInPreviousFrame,  peopleInCurrentFrame)
+    def updateCount(self, contours, peopleInPreviousFrame):
+        peopleInCurrentFrame = self.findPeople(contours)
+        peopleTracker = self.updatePeopleTracker(peopleInPreviousFrame,  peopleInCurrentFrame)
         people = []
         for p in peopleTracker:
-            direction = checkAndCountPeople(p.track)
+            direction = self.checkAndCountPeople(p.track)
             if direction != 0:
                 print self.insideCount
             else:
@@ -98,20 +105,20 @@ class PeopleCounter:
 
     def start(self):
         while(True):
-            ret, frame = self.videoStream.read()
-            if not ret:
-                break
-            frame = self.frameProcessor.drawLine(frame)
-            frame = self.frameProcessor.subtractBackground(frame)
+            origframe = self.videoStream.read()
+            origframe = self.frameProcessor.cropFrame(origframe)
+            origframe = self.frameProcessor.drawMidLine(origframe)
+	    cv2.imshow('frame', origframe)
+            frame = self.frameProcessor.subtractBackground(origframe)
             frame = self.frameProcessor.applyThreshold(frame)
             frame = self.frameProcessor.blurFrame(frame)
             frame = self.frameProcessor.morphFrame(frame)
             frame = self.frameProcessor.dilateFrame(frame)
-            cv2.imshow('ProcessedFrame', frame)
-            img, contours, hierarchy = self.frameProcessor.findContours()
-            people = updateCount(contours,  people)
-            cv2.drawContours(frame, contours, -1, (0,0,255), 3)
-            cv2.imshow('cotoured', frame)
+            #cv2.imshow('ProcessedFrame', frame)
+            contours = self.frameProcessor.findContours(frame)
+            self.people = self.updateCount(contours,  self.people)
+            cv2.drawContours(origframe, contours, -1, (0,0,255), 3)
+            cv2.imshow('cotoured', origframe)
             k = cv2.waitKey(30) & 0xff
             if k == 27:
                 break

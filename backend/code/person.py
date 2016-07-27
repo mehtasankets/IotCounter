@@ -1,4 +1,5 @@
 #!/bin/python
+import cv2
 
 class Person:
     id = 0
