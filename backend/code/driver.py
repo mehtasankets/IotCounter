@@ -59,15 +59,15 @@ def main():
     shadowDetection = False
     midLineColor = (0, 0, 255)
     midLineThickness = 5
-    midLine = int(width/2)
-    midLineLenght = height
-    cropFactor = (0, 640, 0, 480)
     threshVal = 127
     threshMaxVal = 255
     kernelsize = (11, 11)
     videoMeta = VideoMeta(height, width, framerate)
     videoStream = initVideoStream(videoMeta)
     initFrame(videoStream)
+    midLine = int((p2.x - p1.x)/2)
+    midLineLenght = int(p2.y - p1.y)
+    cropFactor = (p1.x, p2.x, p1.y, p2.y)
     frameProcessor = FrameProcessor(midLineColor, midLineThickness, midLine, midLineLenght, cropFactor, bgHistory, bgThreshold, shadowDetection, threshVal, threshMaxVal, kernelsize, p1, p2)
     peopleCounter = PeopleCounter(videoMeta, videoStream, frameProcessor)
     peopleCounter.start()
