@@ -27,12 +27,12 @@ function _refreshCounter(self, stripNode, counters) {
 }
 
 function _addStrips(self) {
-  let stripRefNames = ['badminton', 'gym', 'activityRoom'];
+  let stripRefNames = ['Phoenix Office', 'Raheja Office'];
   for(let i in stripRefNames) {
     var stripNode = document.createElement('iot-strip');
     stripNode.refName = stripRefNames[i];
     self.shadowRoot.querySelector('#strips').appendChild(stripNode);
-    _refreshCounter(self, stripNode);
+    //_refreshCounter(self, stripNode);
   }
 }
 

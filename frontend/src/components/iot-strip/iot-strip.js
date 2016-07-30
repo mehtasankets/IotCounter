@@ -1,20 +1,19 @@
 function _addCards(self) {
-  var cardNode = document.createElement('iot-info-card');
-  self.shadowRoot.querySelector('.row').appendChild(cardNode);
+  var cards = ['badminton', 'gym', 'parking'];
+  for(let i in cards) {
+    var cardNode = document.createElement('iot-info-card');
+    self.shadowRoot.querySelector('.info-card').appendChild(cardNode);
+    cardNode.refName = cards[i];
+  }
 }
 
-function _setHeader(self, headerMap) {
+function _setHeader(self) {
   var header = self.shadowRoot.querySelector('.header');
-  header.innerText = headerMap[self.refName];
+  header.innerText = self.refName;
 }
 
 (function() {
   console.log("initializing strip");
-  var _headerMap = {
-    'badminton': 'Badminton Court',
-    'gym': 'Gym',
-    'activityRoom': 'Activity Room'
-  };
   var _refName = '';
   var currentScriptElement = document._currentScript || document.currentScript;
   var importDoc = currentScriptElement.ownerDocument;
@@ -34,7 +33,7 @@ function _setHeader(self, headerMap) {
     },
     set: function(refName) {
       _refName = refName;
-      _setHeader(this, _headerMap);
+      _setHeader(this);
     },
     enumberable: true,
     writeable: true
