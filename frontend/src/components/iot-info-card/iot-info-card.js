@@ -1,3 +1,4 @@
+
 function _setName(self) {
   console.log('set value', self.dataName);
   self.shadowRoot.querySelector('.card-title').innerText = self.dataName;
@@ -17,16 +18,8 @@ function _setName(self) {
     var clone = document.importNode(template.content, true);
     this.createShadowRoot().appendChild(clone);
   }  
-  Object.defineProperty(proto, 'dataName', {
-    get: function() {
-      return _dataName;
-    },
-    set: function(dataName) {
-      _dataName = dataName;
-      _setName(this);
-    },
-    enumberable: true,
-    writeable: true
-  });
+  proto.attachedCallback = function() {
+      //_addCounterListener(this);
+  }
   document.registerElement('iot-info-card', {prototype: proto});
 }());

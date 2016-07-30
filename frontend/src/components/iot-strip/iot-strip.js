@@ -3,14 +3,19 @@ function _addCards(self) {
   self.shadowRoot.querySelector('.row').appendChild(cardNode);
 }
 
-function _setHeader(self) {
-  var cardNode = self.shadowRoot.querySelector('.row iot-info-card');
-  cardNode.shadowRoot.querySelector('.card-title').innerText = self.dataName;
+function _setHeader(self, headerMap) {
+  var header = self.shadowRoot.querySelector('.header');
+  header.innerText = headerMap[self.refName];
 }
 
 (function() {
   console.log("initializing strip");
-  var _dataName = '';
+  var _headerMap = {
+    'badminton': 'Badminton Court',
+    'gym': 'Gym',
+    'activityRoom': 'Activity Room'
+  };
+  var _refName = '';
   var currentScriptElement = document._currentScript || document.currentScript;
   var importDoc = currentScriptElement.ownerDocument;
   var template = document.querySelector('#iot-strip-template');
@@ -23,13 +28,13 @@ function _setHeader(self) {
     this.createShadowRoot().appendChild(clone);
     _addCards(this);
   }
-  Object.defineProperty(proto, 'dataName', {
+  Object.defineProperty(proto, 'refName', {
     get: function() {
-      return _dataName;
+      return _refName;
     },
-    set: function(dataName) {
-      _dataName = dataName;
-      _setHeader(this);
+    set: function(refName) {
+      _refName = refName;
+      _setHeader(this, _headerMap);
     },
     enumberable: true,
     writeable: true
