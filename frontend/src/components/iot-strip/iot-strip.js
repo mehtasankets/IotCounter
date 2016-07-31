@@ -1,9 +1,10 @@
 function _addCards(self) {
-  var cards = ['badminton', 'gym', 'parking'];
+  var cards = ['Badminton', 'Gym', 'Parking'];
   for(let i in cards) {
     var cardNode = document.createElement('iot-info-card');
-    self.shadowRoot.querySelector('.info-card').appendChild(cardNode);
+    cardNode.stripName = self.refName;
     cardNode.refName = cards[i];
+    self.shadowRoot.querySelector('.info-card').appendChild(cardNode);
   }
 }
 
@@ -25,7 +26,6 @@ function _setHeader(self) {
     }
     var clone = document.importNode(template.content, true);
     this.createShadowRoot().appendChild(clone);
-    _addCards(this);
   }
   Object.defineProperty(proto, 'refName', {
     get: function() {
@@ -34,6 +34,7 @@ function _setHeader(self) {
     set: function(refName) {
       _refName = refName;
       _setHeader(this);
+      _addCards(this);
     },
     enumberable: true,
     writeable: true

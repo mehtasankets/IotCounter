@@ -9,21 +9,7 @@ function _initFirebase (self) {
     storageBucket: "iotcounter.appspot.com",
   };
   firebase.initializeApp(config);
-  self.database = firebase.database();
   console.log("initialized firebase from container");
-}
-
-function _refreshCounter(self, stripNode, counters) {
-    stripNode.counterRef = self.database.ref(stripNode.refName + 'Counter');
-    // Make sure we remove all previous listeners.
-    stripNode.counterRef.off();
-    var setCounter = function(data) {
-      var val = data.val();
-      // let card = this.shadowRoot.querySelector('iot-info-card');
-      // card.shadowRoot.querySelector('.count').innerHTML = data.val();
-    }.bind(stripNode);
-    stripNode.counterRef.on('child_added', setCounter);
-    stripNode.counterRef.on('child_changed', setCounter);
 }
 
 function _addStrips(self) {
@@ -32,7 +18,6 @@ function _addStrips(self) {
     var stripNode = document.createElement('iot-strip');
     stripNode.refName = stripRefNames[i];
     self.shadowRoot.querySelector('#strips').appendChild(stripNode);
-    //_refreshCounter(self, stripNode);
   }
 }
 
