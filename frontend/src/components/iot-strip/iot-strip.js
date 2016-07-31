@@ -9,8 +9,8 @@ function _addCards(self) {
 }
 
 function _setHeader(self) {
-  var header = self.shadowRoot.querySelector('.header');
-  header.innerText = self.refName;
+  var header = self.shadowRoot.querySelector('.office-name');
+  header.innerHTML = self.refName;
 }
 
 (function() {

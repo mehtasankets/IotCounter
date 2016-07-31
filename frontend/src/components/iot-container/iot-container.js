@@ -1,17 +1,5 @@
 'use strict';
 
-function _initFirebase (self) {
-  // Initialize Firebase
-  var config = {
-    apiKey: "AIzaSyCJ6hsMhbWViZ8ozlubxS2B7NstsQTcv8w",
-    authDomain: "iotcounter.firebaseapp.com",
-    databaseURL: "https://iotcounter.firebaseio.com",
-    storageBucket: "iotcounter.appspot.com",
-  };
-  firebase.initializeApp(config);
-  console.log("initialized firebase from container");
-}
-
 function _addStrips(self) {
   let stripRefNames = ['Phoenix Office', 'Raheja Office'];
   for(let i in stripRefNames) {
@@ -28,7 +16,6 @@ function _addStrips(self) {
   var template = document.querySelector('#iot-container-template');
   var proto = Object.create(HTMLElement.prototype);
   proto.createdCallback = function() {
-    _initFirebase(this);
     if (!template) {
       template = importDoc.querySelector('#iot-container-template');
     }

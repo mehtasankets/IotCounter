@@ -1,0 +1,18 @@
+{
+  "phoenixBadmintonCounter" : {
+    "20160731" : 10,
+    "20160801" : {
+      "00" : 12,
+      "01" : 15
+    }
+  },
+  "phoenixGymCounter" : {
+    "20160731" : 21
+  },
+  "phoenixParkingCounter" : {
+    "20160731" : 20
+  },
+  "rahejaParkingCounter" : {
+    "20160731" : 43
+  }
+}
