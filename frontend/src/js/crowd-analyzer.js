@@ -1,5 +1,4 @@
 function _initFirebase (self) {
-  // Initialize Firebase
   var config = {
     apiKey: "AIzaSyCJ6hsMhbWViZ8ozlubxS2B7NstsQTcv8w",
     authDomain: "iotcounter.firebaseapp.com",
@@ -7,7 +6,7 @@ function _initFirebase (self) {
     storageBucket: "iotcounter.appspot.com",
   };
   firebase.initializeApp(config);
-  console.log("initialized firebase from container");
+  console.log("initialized firebase");
 }
 
 (function() {
