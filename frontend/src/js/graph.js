@@ -1,30 +1,4 @@
-function _getParameter(val) {
-    var result = "Not found",
-        tmp = [];
-    location.search
-    .substr(1)
-        .split("&")
-        .forEach(function (item) {
-        tmp = item.split("=");
-        if (tmp[0] === val) result = decodeURIComponent(tmp[1]);
-    });
-    return result;
-}
-
-function _getData(self, tableName) {
-    let db = firebase.database();
-    self.tableRef = db.ref(tableName);
-    let value = self.tableRef.limitToLast(24).once("value").then(function(snapshot) {
-        console.log(snapshot.val());
-        return snapshot.val(); 
-    });
-    return value;
-}
-
-$(function () {
-    let tableName = _getParameter('ref');
-    let data = _getData(this, tableName);
-    console.log('test', data);
+function _setHighChartsTheme(self) {
     Highcharts.createElement('link', {
         href: 'https://fonts.googleapis.com/css?family=Unica+One',
         rel: 'stylesheet',
@@ -232,32 +206,52 @@ $(function () {
 
     // Apply the theme
     Highcharts.setOptions(Highcharts.theme);
+}
 
+function _getParameter(val) {
+    var result = "Not found",
+        tmp = [];
+    location.search
+    .substr(1)
+        .split("&")
+        .forEach(function (item) {
+        tmp = item.split("=");
+        if (tmp[0] === val) result = decodeURIComponent(tmp[1]);
+    });
+    return result;
+}
+
+function _drawDailyChart(self, data) {
+    let keys = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
+    let values = [];
+    for(let k in keys) {
+        key = keys[k]
+        if(data[key])
+            values.push(data[key]);
+        else
+            values.push(0);
+    }
     $('.daily-graph').highcharts({
         title: {
-            text: 'Monthly Average Temperature',
+            text: 'Hourly Crowd Analysis',
             x: -20 //center
         },
         subtitle: {
-            text: 'Source: WorldClimate.com',
+            text: 'Source: IoT Counter',
             x: -20
         },
         xAxis: {
-            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+            categories: keys
         },
         yAxis: {
             title: {
-                text: 'Temperature (°C)'
+                text: 'People Count'
             },
             plotLines: [{
                 value: 0,
                 width: 1,
                 color: '#808080'
             }]
-        },
-        tooltip: {
-            valueSuffix: '°C'
         },
         legend: {
             layout: 'vertical',
@@ -266,36 +260,44 @@ $(function () {
             borderWidth: 0
         },
         series: [{
-            name: 'badminton',
-            data: [3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8]
+            name: 'Badminton',
+            data: values
         }]
     });
+}
 
+function _drawWeeklyChart(self, data) {
+    let keys = Object.keys(data);
+    let values = [];
+    for(let d in data){
+        summation = 0;
+        for(let hr in data[d]) {
+            hour = ('00'+hr).slice(-2);
+            summation = summation + data[d][hour];
+        }
+        values.push(summation);
+    }
     $('.weekly-graph').highcharts({
         title: {
-            text: 'Monthly Average Temperature',
+            text: '7 Days Crowd Analysis',
             x: -20 //center
         },
         subtitle: {
-            text: 'Source: WorldClimate.com',
+            text: 'Source: IoT Counter',
             x: -20
         },
         xAxis: {
-            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+            categories: keys
         },
         yAxis: {
             title: {
-                text: 'Temperature (°C)'
+                text: 'People Count'
             },
             plotLines: [{
                 value: 0,
                 width: 1,
                 color: '#808080'
             }]
-        },
-        tooltip: {
-            valueSuffix: '°C'
         },
         legend: {
             layout: 'vertical',
@@ -304,8 +306,35 @@ $(function () {
             borderWidth: 0
         },
         series: [{
-            name: 'badminton',
-            data: [3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8]
+            name: 'Badminton',
+            data: values
         }]
     });
+}
+
+function _createDailyChart(self, tableName) {
+    let db = firebase.database();
+    self.tableRef = db.ref(tableName + '/20160731');
+    self.tableRef.once("value").then(function(snapshot) {
+        console.log('daily:', snapshot.val());
+        let data = snapshot.val();
+        _drawDailyChart(self, data);
+    });
+}
+
+function _createWeeklyChart(self, tableName) {
+    let db = firebase.database();
+    self.tableRef = db.ref(tableName);
+    self.tableRef.limitToLast(7).once("value").then(function(snapshot) {
+        console.log('weekly:', snapshot.val());
+        let data = snapshot.val();
+        _drawWeeklyChart(self, data);
+    });
+}
+
+$(function () {
+    _setHighChartsTheme(this);
+    let tableName = _getParameter('ref');
+    _createDailyChart(this, tableName);
+    _createWeeklyChart(this, tableName);
 });

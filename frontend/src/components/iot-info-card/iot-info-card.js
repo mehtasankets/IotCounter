@@ -91,7 +91,7 @@ function _attachRefreshListener(self) {
 
 function _setCardHeader(self) {
   self.shadowRoot.querySelector('.header').innerHTML = self.headerConfig[self.refName];
-  self.shadowRoot.querySelector('.history').href = '/src/graph.html?ref=' + _getTableName(self);
+  self.shadowRoot.querySelector('.history').href = '/graph.html?ref=' + _getTableName(self);
 }
 
 (function() {
