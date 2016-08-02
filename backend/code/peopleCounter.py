@@ -1,25 +1,29 @@
 import cv2
-import numpy as np 
+import numpy as np
 from person import Person
 import math
 
 class PeopleCounter:
 
-    def __init__(self, videoMeta, videoStream, frameProcessor):
+    def __init__(self, videoMeta, videoStream, frameProcessor, firebaseApi):
 	self.people = []
         self.insideCount = 0
         self.videoMeta = videoMeta
         self.videoStream = videoStream
         self.frameProcessor = frameProcessor
+        self.firebaseApi = firebaseApi
 
     def resetCounter(self):
         self.insideCount = 0
+        self.firebaseApi.setCounter(self.insideCount)
 
     def incrementCounter(self):
         self.insideCount = self.insideCount + 1
+        self.firebaseApi.setCounter(self.insideCount)
 
     def decrementCounter(self):
         self.insideCount = self.insideCount - 1
+        self.firebaseApi.setCounter(self.insideCount)
 
     def checkAndCountPeople(self, centerPoints):
         xCoordinates = []

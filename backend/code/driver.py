@@ -11,6 +11,7 @@ from videoMeta import VideoMeta
 from peopleCounter import PeopleCounter
 from frameProcessor import FrameProcessor
 from point import Point
+from firebaseApi import FirebaseApi
 
 p1 = Point(0, 0)
 p2 = Point(640, 480)
@@ -62,6 +63,7 @@ def main():
     threshVal = 127
     threshMaxVal = 255
     kernelsize = (11, 11)
+    firebaseConnection = 'https://iotcounter.firebaseio.com'
     videoMeta = VideoMeta(height, width, framerate)
     videoStream = initVideoStream(videoMeta)
     initFrame(videoStream)
@@ -69,7 +71,8 @@ def main():
     midLineLenght = int(p2.y - p1.y)
     cropFactor = (p1.x, p2.x, p1.y, p2.y)
     frameProcessor = FrameProcessor(midLineColor, midLineThickness, midLine, midLineLenght, cropFactor, bgHistory, bgThreshold, shadowDetection, threshVal, threshMaxVal, kernelsize, p1, p2)
-    peopleCounter = PeopleCounter(videoMeta, videoStream, frameProcessor)
+    firebaseApi = FirebaseApi(firebaseConnection)
+    peopleCounter = PeopleCounter(videoMeta, videoStream, frameProcessor, firebaseApi)
     peopleCounter.start()
 
 if __name__ == '__main__':
