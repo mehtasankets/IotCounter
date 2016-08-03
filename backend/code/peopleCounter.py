@@ -23,6 +23,8 @@ class PeopleCounter:
 
     def decrementCounter(self):
         self.insideCount = self.insideCount - 1
+	if(self.insideCount < 0):
+	    self.insideCount = 0
         self.firebaseApi.setCounter(self.insideCount)
 
     def checkAndCountPeople(self, centerPoints):
@@ -60,7 +62,7 @@ class PeopleCounter:
         for c in contours:
             area = cv2.contourArea(c)
             areas.append(area)
-            if area >= 300:
+            if area >= 600:
                 people.append(Person(-1, c))
         return people
 
