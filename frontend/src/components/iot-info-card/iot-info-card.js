@@ -79,10 +79,17 @@ function _attachRefreshListener(self) {
     self.counterRef.off();
     let setCounter = function(data) {
       let val = data.val();
-      _setCircle(self, val, 60);
-      let name = self.shadowRoot.querySelector('.header').innerText;
       console.log(val);
-      let countText = '<h3>Currently, there are <strong>' + data.val() + '</strong> people in ' + name + '</h3>';
+      let keys = Object.keys(val);
+      console.log(keys);
+      maxKey = keys.sort().slice(-1)[0];
+      console.log('maxKey', maxKey);
+      let currValue = val[maxKey];
+      console.log('currval', currValue);
+      _setCircle(self, currValue, 60);
+      let name = self.shadowRoot.querySelector('.header').innerText;
+      
+      let countText = '<h3>Currently, there are <strong>' + currValue + '</strong> people in ' + name + '</h3>';
       self.shadowRoot.querySelector('.count-text').innerHTML = countText;
     }
     self.counterRef.on('child_added', setCounter);

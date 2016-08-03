@@ -312,9 +312,22 @@ function _drawWeeklyChart(self, data) {
     });
 }
 
+function _getCurrentDate() {
+    var d = new Date(),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+
+    return [year, month, day].join('');
+}
+
 function _createDailyChart(self, tableName) {
     let db = firebase.database();
-    self.tableRef = db.ref(tableName + '/20160731');
+    let dateParam = '/' + _getCurrentDate();
+    self.tableRef = db.ref(tableName + dateParam);
     self.tableRef.once("value").then(function(snapshot) {
         console.log('daily:', snapshot.val());
         let data = snapshot.val();
