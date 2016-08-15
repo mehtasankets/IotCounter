@@ -1,0 +1,49 @@
+<template id="iot-info-card-template" iot-custom-web-component>
+  <style>
+    @import "../css/bootstrap.min.css";
+
+    .col-md-4 {
+      height:100%
+    }
+    .panel-info {
+      min-height:25em
+    }
+    .counter-container{
+      height:50%;
+      position:relative;
+    }
+    .coming-soon-img {
+      height:80%;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+    }
+    /*div {
+      border-style:solid;
+      border-width:1px;
+    }*/
+  </style>
+  <div class="col-md-4" style="text-align:center">
+    <div class="panel panel-info" style="height:25em">
+      <div class="panel-heading" style="height:10%">
+        <h3 class="panel-title header"></h3>
+      </div>
+      <div class="panel-body" style="height:90%">
+        <div class="counter-container">
+          <canvas class="count-anim"></canvas>
+          <img class="coming-soon-img" src="/assets/img/comingSoon.png" alt="Coming soon" style="display:none"/>
+        </div>
+        <div style="height:35%;">
+          <span class="count-text"></span>
+        </div>
+        <div style="height:15%;">
+          <a class="btn btn-default history" style="width:100%; height:90%" role="button">View history »</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script src="iot-info-card.js"></script>
