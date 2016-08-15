@@ -8,6 +8,19 @@
     .panel-info {
       min-height:25em
     }
+    .counter-container{
+      height:50%;
+      position:relative;
+    }
+    .coming-soon-img {
+      height:80%;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+    }
     /*div {
       border-style:solid;
       border-width:1px;
@@ -19,8 +32,9 @@
         <h3 class="panel-title header"></h3>
       </div>
       <div class="panel-body" style="height:90%">
-        <div style="height:50%;">
+        <div class="counter-container">
           <canvas class="count-anim"></canvas>
+          <img class="coming-soon-img" src="/assets/img/comingSoon.png" alt="Coming soon" style="display:none"/>
         </div>
         <div style="height:35%;">
           <span class="count-text"></span>

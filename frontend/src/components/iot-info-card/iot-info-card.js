@@ -62,6 +62,27 @@ function _setComingSoonCircle(self) {
   
 }
 
+function _getCurrentDate() {
+    var d = new Date(),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+
+    return [year, month, day].join('');
+}
+
+function _getCurrentHour() {
+    var d = new Date(),
+        hour = '' + d.getHours();
+
+    if (hour.length < 2) hour = '0' + hour;
+    
+    return hour;
+}
+
 function _getTableName(self){
   let tableName = self.stripConfig[self.stripName] + self.refName + 'Counter';
   return tableName;
@@ -69,27 +90,31 @@ function _getTableName(self){
 
 function _attachRefreshListener(self) {
     if(self.stripName === 'Raheja Office' && self.refName != 'Parking') {
-      _setComingSoonCircle(self);
-      self.shadowRoot.querySelector('.count-text').innerHTML = '<h3>Coming Soon!</h3>';
+      self.shadowRoot.querySelector('.count-anim').style.display = 'none';
+      self.shadowRoot.querySelector('.coming-soon-img').style.display = 'block';
+      self.shadowRoot.querySelector('.count-text').innerHTML = '<h3>Under construction! ;)</h3>';
       return;
     }
+    self.shadowRoot.querySelector('.coming-soon-img').style.display = 'none';
     let db = firebase.database();
     let tableName = _getTableName(self);
+    let currRef = self.refName;
     self.counterRef = db.ref(tableName);
     self.counterRef.off();
     let setCounter = function(data) {
-      let val = data.val();
-      console.log(val);
-      let keys = Object.keys(val);
-      console.log(keys);
-      maxKey = keys.sort().slice(-1)[0];
-      console.log('maxKey', maxKey);
-      let currValue = val[maxKey];
-      console.log('currval', currValue);
-      _setCircle(self, currValue, 60);
+      let currValue = 0;
+      let maxVal = self.maxConfig[currRef];
+      if(data.getKey() === _getCurrentDate()) {
+        let val = data.val();
+        let currKey = _getCurrentHour();
+        if(currKey in val) {
+          currValue = val[currKey];
+        }
+      }
+      _setCircle(self, currValue, maxVal);
       let name = self.shadowRoot.querySelector('.header').innerText;
       
-      let countText = '<h3>Currently, there are <strong>' + currValue + '</strong> people in ' + name + '</h3>';
+      let countText = '<h3>Currently, there are <strong>' + currValue + '</strong> people inside ' + name + '</h3>';
       self.shadowRoot.querySelector('.count-text').innerHTML = countText;
     }
     self.counterRef.on('child_added', setCounter);
@@ -110,9 +135,14 @@ function _setCardHeader(self) {
     'Raheja Office': 'raheja'
   };
   let _headerConfig = {
-    'Badminton': 'Badminton',
+    'Badminton': 'Badminton Arena',
     'Gym': 'Gym',
     'Parking': 'Car Parking'
+  };
+  let _maxConfig = {
+    'Badminton': 15,
+    'Gym': 20,
+    'Parking': 75
   };
   let currentScriptElement = document._currentScript || document.currentScript;
   let importDoc = currentScriptElement.ownerDocument;
@@ -153,6 +183,16 @@ function _setCardHeader(self) {
     },
     set: function(headerConfig) {
       _headerConfig = headerConfig;
+    },
+    enumberable: true,
+    writeable: true
+  });
+  Object.defineProperty(proto, 'maxConfig', {
+    get: function() {
+      return _maxConfig;
+    },
+    set: function(maxConfig) {
+      _maxConfig = maxConfig;
     },
     enumberable: true,
     writeable: true

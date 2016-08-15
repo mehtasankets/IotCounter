@@ -270,12 +270,11 @@ function _drawWeeklyChart(self, data) {
     let keys = Object.keys(data);
     let values = [];
     for(let d in data){
-        summation = 0;
-        for(let hr in data[d]) {
-            hour = ('00'+hr).slice(-2);
-            summation = summation + data[d][hour];
+        total = 0;
+        if('total' in data[d]) {
+            total = data[d]['total'];
         }
-        values.push(summation);
+        values.push(total);
     }
     $('.weekly-graph').highcharts({
         title: {
