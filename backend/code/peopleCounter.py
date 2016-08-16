@@ -2,26 +2,42 @@ import cv2
 import numpy as np
 from person import Person
 import math
+import time
 
 class PeopleCounter:
 
     def __init__(self, videoMeta, videoStream, frameProcessor, firebaseApi):
 	self.people = []
         self.insideCount = 0
+        self.total = 0
         self.videoMeta = videoMeta
         self.videoStream = videoStream
         self.frameProcessor = frameProcessor
         self.firebaseApi = firebaseApi
+        self.currDate = time.strftime("%Y%m%d")
 
     def resetCounter(self):
         self.insideCount = 0
-        self.firebaseApi.setCounter(self.insideCount)
+        self.total = 0
+
+    def checkAndResetCounter(self):
+        now = time.strftime("%Y%m%d")
+        if now > self.currDate:
+            resetCounter(self)
+            self.currDate = now
+            return True
+        return False
 
     def incrementCounter(self):
+        self.checkAndResetCounter()
+        self.total = self.total + 1
+        self.firebaseApi.setTotal(self.total)
         self.insideCount = self.insideCount + 1
         self.firebaseApi.setCounter(self.insideCount)
 
     def decrementCounter(self):
+        if(self.checkAndResetCounter()):
+            self.firebaseApi.setTotal(self.total)
         self.insideCount = self.insideCount - 1
 	if(self.insideCount < 0):
 	    self.insideCount = 0
@@ -112,6 +128,9 @@ class PeopleCounter:
     def start(self):
         while(True):
             origframe = self.videoStream.read()
+            if origframe is None:
+                self.videoStream.stop()
+                break
             origframe = self.frameProcessor.cropFrame(origframe)
             origframe = self.frameProcessor.drawMidLine(origframe)
 	    cv2.imshow('frame', origframe)

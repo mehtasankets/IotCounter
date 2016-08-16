@@ -11,6 +11,16 @@ class FirebaseApi:
     def setCounter1(self, count):
 	print count
 
+    def setTotal(self, total):
+        try:
+            currentDate = time.strftime("%Y%m%d")
+            apiPath = '/phoenixBadmintonCounter/' + currentDate
+            data = {'total' : total}
+            result = self.firebase.patch(apiPath, data=data, params={'print': 'silent'})
+	    print 'set to', total
+        except:
+             print('Exception while updating count at firebase: ', sys.exc_info()[0])
+
     def setCounter(self, count):
         try:
             currentDate = time.strftime("%Y%m%d")

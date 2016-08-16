@@ -1,25 +1,30 @@
 #!/bin/python
 
-import numpy as np
-from imutils.video.pivideostream import PiVideoStream
 import cv2
 import sys
 import math
 import time
+import numpy as np
 from person import Person
 from videoMeta import VideoMeta
 from peopleCounter import PeopleCounter
 from frameProcessor import FrameProcessor
 from point import Point
 from firebaseApi import FirebaseApi
+from recordedStream import RecordedStream
 
 p1 = Point(0, 0)
 p2 = Point(640, 480)
 started = False
 
-def initVideoStream(videoMeta):
-    videoStream = PiVideoStream((videoMeta.width, videoMeta.height), videoMeta.framerate).start()
-    time.sleep(2.0)
+def initVideoStream(videoMeta, videoFileName):
+    if videoFileName == None:
+        from imutils.video.pivideostream import PiVideoStream
+        videoStream = PiVideoStream((videoMeta.width, videoMeta.height), videoMeta.framerate).start()
+        time.sleep(2.0)
+    else:
+        videoStream = RecordedStream(videoFileName).start()
+        time.sleep(2.0)
     return videoStream
 
 def getRegion(event, x, y, flags, img):
@@ -52,6 +57,9 @@ def initFrame(videoStream):
 
 def main():
     global p1, p2
+    videoFileName = None
+    if len(sys.argv) > 1:
+        videoFileName = sys.argv[1]
     height = 480
     width = 640
     framerate = 32
@@ -65,7 +73,7 @@ def main():
     kernelsize = (11, 11)
     firebaseConnection = 'https://iotcounter.firebaseio.com'
     videoMeta = VideoMeta(height, width, framerate)
-    videoStream = initVideoStream(videoMeta)
+    videoStream = initVideoStream(videoMeta, videoFileName)
     initFrame(videoStream)
     midLine = int((p2.x - p1.x)/2)
     midLineLenght = int(p2.y - p1.y)
