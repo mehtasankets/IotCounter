@@ -77,9 +77,12 @@ class PeopleCounter:
         areas = []
         for c in contours:
             area = cv2.contourArea(c)
-            areas.append(area)
-            if area >= 600:
+            if area >= 100000:
+                areas.append(area)
                 people.append(Person(-1, c))
+        areas.sort(reverse=True)
+        #if len(areas) > 0:
+        #    print areas
         return people
 
     def closestCenterPoint(self, peopleInCurrentFrame,  peopleInPreviousFrame):
@@ -129,6 +132,7 @@ class PeopleCounter:
         while(True):
             origframe = self.videoStream.read()
             if origframe is None:
+                print "Video ended..!!!"
                 self.videoStream.stop()
                 break
             origframe = self.frameProcessor.cropFrame(origframe)
@@ -143,8 +147,7 @@ class PeopleCounter:
             contours = self.frameProcessor.findContours(frame)
             self.people = self.updateCount(contours,  self.people)
             cv2.drawContours(origframe, contours, -1, (0,0,255), 3)
-            cv2.imshow('cotoured', origframe)
+            #cv2.imshow('cotoured', origframe)
             k = cv2.waitKey(30) & 0xff
             if k == 27:
                 break
-        self.videoStream.stop()

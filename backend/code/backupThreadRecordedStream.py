@@ -9,13 +9,21 @@ class RecordedStream:
         self.stopped = False
 
     def start(self):
+        t = Thread(target=self.update, args=())
+        t.daemon = True
+        t.start()
         return self
 
     def update(self):
-        ret, self.frame = self.stream.read()
+        while True:
+            ret, self.frame = self.stream.read()
+            print self.stopped, ret
+            if self.stopped or ret == False:
+                self.frame = None
+                break
+        return
 
     def read(self):
-        self.update()
         return self.frame
 
     def stop(self):
