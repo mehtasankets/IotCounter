@@ -25,7 +25,6 @@ class FirebaseApi:
             apiPath = '/phoenixBadmintonCounter/' + currentDate
             data = {'total' : total}
             self.postAsync(apiPath, data)
-	    print 'set to', total
 
     def setCounter(self, count):
             currentDate = time.strftime("%Y%m%d")
@@ -33,4 +32,3 @@ class FirebaseApi:
             apiPath = '/phoenixBadmintonCounter/' + currentDate
             data = {str(currentHour) : count}
             self.postAsync(apiPath, data)
-	    print 'set to', count

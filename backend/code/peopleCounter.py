@@ -3,6 +3,7 @@ import numpy as np
 from person import Person
 import math
 import time
+import copy
 
 class PeopleCounter:
 
@@ -28,22 +29,30 @@ class PeopleCounter:
             return True
         return False
 
-    def incrementCounter(self):
+    def incrementCounter(self, incrBy):
         self.checkAndResetCounter()
-        self.total = self.total + 1
+	print str(incrBy) + ' person walked in.'
+        self.total = self.total + incrBy
+	self.insideCount = self.insideCount + incrBy
         self.firebaseApi.setTotal(self.total)
-        self.insideCount = self.insideCount + 1
         self.firebaseApi.setCounter(self.insideCount)
 
-    def decrementCounter(self):
+    def decrementCounter(self, decrBy):
         if(self.checkAndResetCounter()):
             self.firebaseApi.setTotal(self.total)
-        self.insideCount = self.insideCount - 1
+	print str(decrBy) + ' person walked out.'
+        self.insideCount = self.insideCount - decrBy
 	if(self.insideCount < 0):
 	    self.insideCount = 0
         self.firebaseApi.setCounter(self.insideCount)
 
-    def checkAndCountPeople(self, centerPoints):
+    def getPersonCount(self, person):
+	x,y,w,h = cv2.boundingRect(person.trackerBlock)
+	#print 'width ', w, ' height', h
+	personCount = math.floor(h / 400);
+	return int(personCount)
+
+    def checkAndCountPeople(self, centerPoints, person):
         xCoordinates = []
 	midLine = self.frameProcessor.midLine
         for val in centerPoints:
@@ -64,25 +73,21 @@ class PeopleCounter:
             direction = 1
 
         if len(outside) > 0 and len(inside) > 0:
+	    personCount = self.getPersonCount(person)
             if direction == 1:
-                self.incrementCounter()
+                self.incrementCounter(personCount)
                 return 1
             elif direction == -1:
-                self.decrementCounter()
+                self.decrementCounter(personCount)
                 return -1
         return 0
 
     def findPeople(self, contours):
         people = []
-        areas = []
         for c in contours:
             area = cv2.contourArea(c)
             if area >= 100000:
-                areas.append(area)
                 people.append(Person(-1, c))
-        areas.sort(reverse=True)
-        #if len(areas) > 0:
-        #    print areas
         return people
 
     def closestCenterPoint(self, peopleInCurrentFrame,  peopleInPreviousFrame):
@@ -121,33 +126,55 @@ class PeopleCounter:
         peopleTracker = self.updatePeopleTracker(peopleInPreviousFrame,  peopleInCurrentFrame)
         people = []
         for p in peopleTracker:
-            direction = self.checkAndCountPeople(p.track)
-            if direction != 0:
-                print self.insideCount
-            else:
+            direction = self.checkAndCountPeople(p.track, p)
+            if direction == 0:
                 people.append(p)
         return people
 
+    def writeData(self, origFrame):
+        currentText = "Current count: " + str(self.insideCount)
+        totalText = "Today's total count: " + str(self.total)
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        cv2.putText(origFrame, currentText, (20,50), font, 0.75, (200,255,155), 2, cv2.LINE_AA)
+        cv2.putText(origFrame, totalText, (20,80), font, 0.75, (200,255,155), 2, cv2.LINE_AA)
+        return origFrame
+
+    def drawContours(self, frame):
+        trackerBlocks = [s.trackerBlock for s in self.people]
+        cv2.drawContours(frame, trackerBlocks, -1, (0,0,255), 3)
+        return frame
+
     def start(self):
         while(True):
-            origframe = self.videoStream.read()
-            if origframe is None:
-                print "Video ended..!!!"
+            origFrame = self.videoStream.read()
+            if origFrame is None:
                 self.videoStream.stop()
                 break
-            origframe = self.frameProcessor.cropFrame(origframe)
-            origframe = self.frameProcessor.drawMidLine(origframe)
-	    cv2.imshow('frame', origframe)
-            frame = self.frameProcessor.subtractBackground(origframe)
+            origFrame = self.frameProcessor.cropFrame(origFrame)
+            origFrame = self.frameProcessor.drawMidLine(origFrame)
+	    cv2.imshow('frame', origFrame)
+            frame = self.frameProcessor.subtractBackground(origFrame)
+	    cv2.imshow('background', frame)
             frame = self.frameProcessor.applyThreshold(frame)
+	    cv2.imshow('threshold', frame)
             frame = self.frameProcessor.blurFrame(frame)
+	    cv2.imshow('blur', frame)
             frame = self.frameProcessor.morphFrame(frame)
+	    cv2.imshow('morphed', frame)
             frame = self.frameProcessor.dilateFrame(frame)
-            #cv2.imshow('ProcessedFrame', frame)
+            cv2.imshow('dilated', frame)
             contours = self.frameProcessor.findContours(frame)
             self.people = self.updateCount(contours,  self.people)
-            cv2.drawContours(origframe, contours, -1, (0,0,255), 3)
-            #cv2.imshow('cotoured', origframe)
+            cFrame = copy.copy(origFrame)
+            cFrame = self.drawContours(cFrame)
+            cv2.imshow('contoured', cFrame)
+            origFrame = self.writeData(origFrame)
+            cv2.imshow('final', origFrame)
             k = cv2.waitKey(30) & 0xff
             if k == 27:
+                while True:
+                    k = cv2.waitKey(30) & 0xff
+                    if k == 27:
+                        break
                 break
+        self.videoStream.stop()
