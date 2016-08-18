@@ -28,22 +28,29 @@ class PeopleCounter:
             return True
         return False
 
-    def incrementCounter(self):
+    def incrementCounter(self, incrBy):
         self.checkAndResetCounter()
-        self.total = self.total + 1
+	print str(incrBy) + ' person walked in.'
+        self.total = self.total + incrBy
         self.firebaseApi.setTotal(self.total)
-        self.insideCount = self.insideCount + 1
         self.firebaseApi.setCounter(self.insideCount)
 
-    def decrementCounter(self):
+    def decrementCounter(self, decrBy):
         if(self.checkAndResetCounter()):
             self.firebaseApi.setTotal(self.total)
-        self.insideCount = self.insideCount - 1
+	print str(decrBy) + ' person walked out.'
+        self.insideCount = self.insideCount - decrBy
 	if(self.insideCount < 0):
 	    self.insideCount = 0
         self.firebaseApi.setCounter(self.insideCount)
 
-    def checkAndCountPeople(self, centerPoints):
+    def getPersonCount(self, person):
+	x,y,w,h = cv2.boundingRect(person.trackerBlock)
+	#print 'width ', w, ' height', h
+	personCount = math.floor(h / 180);
+	return int(personCount)
+
+    def checkAndCountPeople(self, centerPoints, person):
         xCoordinates = []
 	midLine = self.frameProcessor.midLine
         for val in centerPoints:
@@ -64,21 +71,20 @@ class PeopleCounter:
             direction = 1
 
         if len(outside) > 0 and len(inside) > 0:
+	    personCount = self.getPersonCount(person)
             if direction == 1:
-                self.incrementCounter()
+                self.incrementCounter(personCount)
                 return 1
             elif direction == -1:
-                self.decrementCounter()
+                self.decrementCounter(personCount)
                 return -1
         return 0
 
     def findPeople(self, contours):
         people = []
-        areas = []
         for c in contours:
             area = cv2.contourArea(c)
-            areas.append(area)
-            if area >= 600:
+            if area >= 28000:
                 people.append(Person(-1, c))
         return people
 
@@ -118,10 +124,8 @@ class PeopleCounter:
         peopleTracker = self.updatePeopleTracker(peopleInPreviousFrame,  peopleInCurrentFrame)
         people = []
         for p in peopleTracker:
-            direction = self.checkAndCountPeople(p.track)
-            if direction != 0:
-                print self.insideCount
-            else:
+            direction = self.checkAndCountPeople(p.track, p)
+            if direction == 0:
                 people.append(p)
         return people
 
@@ -141,9 +145,14 @@ class PeopleCounter:
             frame = self.frameProcessor.dilateFrame(frame)
             #cv2.imshow('ProcessedFrame', frame)
             contours = self.frameProcessor.findContours(frame)
+	    areas = []
+            for c in contours:
+                area = cv2.contourArea(c)
+		if area > 28000:
+			areas.append(c)
             self.people = self.updateCount(contours,  self.people)
-            cv2.drawContours(origframe, contours, -1, (0,0,255), 3)
-            cv2.imshow('cotoured', origframe)
+            cv2.drawContours(origframe, areas, -1, (0,0,255), 3)
+            #cv2.imshow('cotoured', origframe)
             k = cv2.waitKey(30) & 0xff
             if k == 27:
                 break

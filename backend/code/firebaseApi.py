@@ -17,7 +17,6 @@ class FirebaseApi:
             apiPath = '/phoenixBadmintonCounter/' + currentDate
             data = {'total' : total}
             result = self.firebase.patch(apiPath, data=data, params={'print': 'silent'})
-	    print 'set to', total
         except:
              print('Exception while updating count at firebase: ', sys.exc_info()[0])
 
@@ -28,6 +27,5 @@ class FirebaseApi:
             apiPath = '/phoenixBadmintonCounter/' + currentDate
             data = {str(currentHour) : count}
             result = self.firebase.patch(apiPath, data=data, params={'print': 'silent'})
-	    print 'set to', count
         except:
              print('Exception while updating count at firebase: ', sys.exc_info()[0])
