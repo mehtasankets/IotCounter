@@ -110,12 +110,11 @@ function _attachRefreshListener(self) {
         if(currKey in val) {
           currValue = val[currKey];
         }
+        _setCircle(self, currValue, maxVal);
+        let name = self.shadowRoot.querySelector('.header').innerText;
+        let countText = '<h3>Currently, there are <strong>' + currValue + '</strong> people inside ' + name + '</h3>';
+        self.shadowRoot.querySelector('.count-text').innerHTML = countText;
       }
-      _setCircle(self, currValue, maxVal);
-      let name = self.shadowRoot.querySelector('.header').innerText;
-      
-      let countText = '<h3>Currently, there are <strong>' + currValue + '</strong> people inside ' + name + '</h3>';
-      self.shadowRoot.querySelector('.count-text').innerHTML = countText;
     }
     self.counterRef.on('child_added', setCounter);
     self.counterRef.on('child_changed', setCounter);
